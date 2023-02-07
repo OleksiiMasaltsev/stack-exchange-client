@@ -22,9 +22,10 @@ public class ApiHttpClient {
                 .uri(URI.create(url))
                 .GET()
                 .build();
-        HttpResponse<String> httpResponse;
+        HttpResponse<byte[]> httpResponse;
         try {
-            httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+            byte[] body = httpResponse.body();
             return objectMapper.readValue(httpResponse.body(), clazz);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Can't get a value from url", e);
