@@ -1,9 +1,5 @@
 package model;
 
-import lombok.Data;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-public class Collective {
-    private List<String> tags;
-}
+public record Collective (@JsonProperty("collective") Tag collective) {}
