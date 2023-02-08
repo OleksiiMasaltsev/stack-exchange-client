@@ -5,7 +5,7 @@ import java.util.List;
 
 public record User (
         @JsonProperty("collectives")
-        List<Collective> collectives,
+        List<CollectiveExternal> collectiveExternals,
         @JsonProperty("answer_count")
         int answerCount,
         @JsonProperty("question_count")
