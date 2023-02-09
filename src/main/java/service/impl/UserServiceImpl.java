@@ -4,7 +4,7 @@ import model.CollectiveExternal;
 import model.Root;
 import model.User;
 import service.UserService;
-import util.RootHttpClient;
+import client.RootHttpClient;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,8 +33,7 @@ public class UserServiceImpl implements UserService {
             }
             List<User> userList = users.stream()
                     .filter(user -> user.location() != null
-                            && countries.stream()
-                                .anyMatch(country -> user.location().contains(country))
+                            && countries.contains(user.location())
                             && user.answerCount() >= answerCountMin)
                     .toList();
 
@@ -52,8 +51,7 @@ public class UserServiceImpl implements UserService {
 
     private List<String> checkTags(List<String> inputTags, User user) {
         return extractTags(user).stream()
-                .filter(tag -> inputTags.stream()
-                        .anyMatch(tag::contains))
+                .filter(inputTags::contains)
                 .toList();
     }
 

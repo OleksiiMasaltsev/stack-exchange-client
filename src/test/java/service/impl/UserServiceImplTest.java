@@ -1,24 +1,9 @@
 package service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import model.Collective;
-import model.CollectiveExternal;
-import model.Root;
-import model.User;
-import org.junit.jupiter.api.AfterEach;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import util.RootHttpClient;
-import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {

@@ -1,4 +1,4 @@
-package util;
+package client;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,9 +39,8 @@ public class RootHttpClient {
     }
 
     private String unZip(InputStream is) {
-        try {
-            InputStream bodyStream = new GZIPInputStream(is);
-            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        try (InputStream bodyStream = new GZIPInputStream(is);
+             ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[4096];
             int length;
             while ((length = bodyStream.read(buffer)) > 0) {
