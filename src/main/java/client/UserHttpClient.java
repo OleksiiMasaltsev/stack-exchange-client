@@ -13,11 +13,11 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
-public class RootHttpClient {
+public class UserHttpClient {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    public RootHttpClient() {
+    public UserHttpClient() {
         httpClient = HttpClient.newHttpClient();
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

@@ -3,19 +3,20 @@ package service;
 import model.CollectiveItem;
 import model.Wrapper;
 import model.User;
-import client.RootHttpClient;
+import client.UserHttpClient;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class UserService {
     private static final String FILTER = "!P)usXvvTVLsqpq0WqvGhjAVUE0ev8qBGZ_)RDzS)62n";
     private static final String USERS_LINK = "https://api.stackexchange.com/2.3/users?" +
             "pagesize=100&order=desc&sort=reputation&site=stackoverflow&" +
             "filter=" + FILTER;
-    private final RootHttpClient httpClient;
+    private final UserHttpClient httpClient;
 
     public UserService() {
-        httpClient  = new RootHttpClient();
+        httpClient  = new UserHttpClient();
     }
 
     public void displayFilteredUsers(List<String> countries, List<String> inputTags,
@@ -27,30 +28,30 @@ public class UserService {
             wrapper = httpClient.get(USERS_LINK + "&min=" + reputationMin + "&page=" + page);
             List<User> users = wrapper.users();
             if (users == null) {
-                continue;
+                break;
             }
-            List<User> userList = users.stream()
-                    .filter(user -> user.location() != null
-                            && countries.contains(user.location())
-                            && user.answerCount() >= answerCountMin)
+
+            List<User> preFilteredUsers = users.stream()
+                    .filter(user -> Objects.nonNull(user.location()))
+                    .filter(user -> countries.stream()
+                            .anyMatch(country -> user.location().contains(country)))
+                    .filter(user -> user.answerCount() >= answerCountMin)
+                    .filter(user -> Objects.nonNull(user.collectiveItems()))
                     .toList();
 
-            if (userList.size() > 0) {
-                for (User user : userList) {
-                    List<String> checkedTags = checkTags(inputTags, user);
-                    if (checkedTags.size() > 0) {
-                        System.out.println(user);
-                    }
-                }
+            if (preFilteredUsers.size() > 0) {
+                preFilteredUsers.stream()
+                        .filter(user -> inputTags.stream()
+                                .anyMatch(inputTag -> extractTags(user).stream()
+                                        .anyMatch(tag -> tag.contains(inputTag))))
+                        .forEach(System.out::println);
             }
+//                    .filter(user -> user.collectiveItems().stream()
+//                            .flatMap(collectiveItem -> collectiveItem.collective().tags().stream())
+//                            .anyMatch(inputTags::contains))
+//                    .forEach(System.out::println);
 
         } while (wrapper.hasMore());
-    }
-
-    private List<String> checkTags(List<String> inputTags, User user) {
-        return extractTags(user).stream()
-                .filter(inputTags::contains)
-                .toList();
     }
 
     private List<String> extractTags(User user) {
