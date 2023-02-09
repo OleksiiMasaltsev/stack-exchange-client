@@ -5,7 +5,7 @@ import java.util.List;
 
 public record User (
         @JsonProperty("collectives")
-        List<CollectiveExternal> collectiveExternals,
+        List<CollectiveItem> collectiveItems,
         @JsonProperty("answer_count")
         int answerCount,
         @JsonProperty("question_count")
@@ -21,4 +21,13 @@ public record User (
         @JsonProperty("profile_image")
         String profileImage,
         @JsonProperty("display_name")
-        String displayName) {}
+        String displayName) {
+        @Override
+        public String toString() {
+                List<String> tags = collectiveItems.stream()
+                        .flatMap(collectiveItem -> collectiveItem.collective().tags().stream())
+                        .toList();
+                return displayName + " " + location + " " + answerCount + " " + questionCount
+                        + " " + String.join(",", tags) + " " + link + " " + profileImage;
+        }
+}
