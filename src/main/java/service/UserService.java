@@ -1,6 +1,6 @@
 package service;
 
-import model.Wrapper;
+import model.ResponseWrapper;
 import model.User;
 import client.UserHttpClient;
 import java.util.List;
@@ -19,22 +19,22 @@ public class UserService {
 
     public void displayFilteredUsers(List<String> countries, List<String> inputTags,
                                      int reputationMin, int answerCountMin) {
-        Wrapper wrapper;
+        ResponseWrapper responseWrapper;
         int page = 0;
         do {
             page++;
-            wrapper = httpClient.get(USERS_LINK + "&min=" + reputationMin + "&page=" + page);
-            List<User> users = wrapper.users();
+            responseWrapper = httpClient.get(USERS_LINK + "&min=" + reputationMin + "&page=" + page);
+            List<User> users = responseWrapper.users();
             if (users == null) {
                 break;
             }
 
             List<User> preFilteredUsers = users.stream()
-                    .filter(user -> Objects.nonNull(user.location()))
+                    .filter(user -> Objects.nonNull(user.location())
+                            && Objects.nonNull(user.collectiveItems()))
                     .filter(user -> countries.stream()
                             .anyMatch(country -> user.location().contains(country)))
                     .filter(user -> user.answerCount() >= answerCountMin)
-                    .filter(user -> Objects.nonNull(user.collectiveItems()))
                     .toList();
 
             if (preFilteredUsers.size() > 0) {
@@ -45,7 +45,7 @@ public class UserService {
                         .forEach(System.out::println);
             }
 
-        } while (wrapper.hasMore());
+        } while (responseWrapper.hasMore());
     }
 
     private List<String> extractTags(User user) {

@@ -2,7 +2,7 @@ package client;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import model.Wrapper;
+import model.ResponseWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +23,7 @@ public class UserHttpClient {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public Wrapper get(String url) {
+    public ResponseWrapper get(String url) {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Accept-Encoding", "gzip")
@@ -32,7 +32,7 @@ public class UserHttpClient {
         HttpResponse<InputStream> httpResponse;
         try {
             httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofInputStream());
-            return objectMapper.readValue(unZip(httpResponse.body()), Wrapper.class);
+            return objectMapper.readValue(unZip(httpResponse.body()), ResponseWrapper.class);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Can't get a value from url", e);
         }
