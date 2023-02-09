@@ -1,10 +1,8 @@
 package service;
 
-import model.CollectiveItem;
 import model.Wrapper;
 import model.User;
 import client.UserHttpClient;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,7 +20,7 @@ public class UserService {
     public void displayFilteredUsers(List<String> countries, List<String> inputTags,
                                      int reputationMin, int answerCountMin) {
         Wrapper wrapper;
-        int page = 20;
+        int page = 0;
         do {
             page++;
             wrapper = httpClient.get(USERS_LINK + "&min=" + reputationMin + "&page=" + page);
