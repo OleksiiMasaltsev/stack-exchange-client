@@ -22,7 +22,7 @@ public class UserService {
     public void displayFilteredUsers(List<String> countries, List<String> inputTags,
                                      int reputationMin, int answerCountMin) {
         Wrapper wrapper;
-        int page = 0;
+        int page = 20;
         do {
             page++;
             wrapper = httpClient.get(USERS_LINK + "&min=" + reputationMin + "&page=" + page);
@@ -46,22 +46,14 @@ public class UserService {
                                         .anyMatch(tag -> tag.contains(inputTag))))
                         .forEach(System.out::println);
             }
-//                    .filter(user -> user.collectiveItems().stream()
-//                            .flatMap(collectiveItem -> collectiveItem.collective().tags().stream())
-//                            .anyMatch(inputTags::contains))
-//                    .forEach(System.out::println);
 
         } while (wrapper.hasMore());
     }
 
     private List<String> extractTags(User user) {
-        List<CollectiveItem> externals = user.collectiveItems();
-        if (externals == null) {
-            return Collections.emptyList();
-        } else {
-            return externals.stream()
-                    .flatMap(external -> external.collective().tags().stream())
-                    .toList();
-        }
+        return user.collectiveItems().stream()
+                .filter(Objects::nonNull)
+                .flatMap(collectiveItem -> collectiveItem.collective().tags().stream())
+                .toList();
     }
 }
