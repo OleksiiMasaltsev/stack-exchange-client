@@ -23,7 +23,6 @@ public class UserServiceImpl implements UserService {
     public void displayFilteredUsers(List<String> countries, int reputationMin,
                                      int answerCountMin, List<String> inputTags) {
         Root root;
-        // TODO set to 0 before release
         int page = 0;
         do {
             page++;
