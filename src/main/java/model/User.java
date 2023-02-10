@@ -27,7 +27,7 @@ public record User (
                                 .flatMap(collectiveItem -> collectiveItem.collective().tags().stream())
                                 .collect(Collectors.toSet());
                 }
-                return displayName + " " + location + " " + answerCount + " " + questionCount
-                        + " " + String.join(",", tags) + " " + link + " " + profileImage;
+                return String.format("%s %s %d %d %s %s %s", displayName, location, answerCount,
+                        questionCount, String.join(",", tags), link, profileImage);
         }
 }

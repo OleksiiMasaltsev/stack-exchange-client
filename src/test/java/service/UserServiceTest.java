@@ -8,7 +8,11 @@ import model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +27,7 @@ class UserServiceTest {
     }
 
     @Test
-    void displayFilteredUsers_twoValidUsers_printOnlyOne() {
+    void displayFilteredUsers_twoValidUsers_printsOnlyOne() {
         Set<String> tags = Set.of("azure-digital-twins",
                 "azure-secrets",
                 "azure-functions-docker",
@@ -38,7 +42,12 @@ class UserServiceTest {
         ResponseWrapper wrapper = new ResponseWrapper(Set.of(user1, user2), false);
 
         when(userHttpClient.get(anyString())).thenReturn(wrapper);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
         userService.displayFilteredUsers(Set.of("Moldova"), Set.of("java", "docker"), 223, 1);
+
+        assertEquals(user1.toString(), baos.toString().strip());
         Mockito.verify(userHttpClient).get(anyString());
     }
 
@@ -58,7 +67,12 @@ class UserServiceTest {
         ResponseWrapper wrapper = new ResponseWrapper(Set.of(user1, user2), false);
 
         when(userHttpClient.get(anyString())).thenReturn(wrapper);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(baos));
         userService.displayFilteredUsers(Set.of("Moldova"), Set.of("java", "docker"), 223, 1);
+
+        assertEquals("", baos.toString().strip());
         Mockito.verify(userHttpClient).get(anyString());
     }
 }
