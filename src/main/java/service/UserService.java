@@ -11,30 +11,30 @@ public class UserService {
     private static final String USERS_LINK = "https://api.stackexchange.com/2.3/users?" +
             "pagesize=100&order=desc&sort=reputation&site=stackoverflow&" +
             "filter=" + FILTER;
-    private final UserHttpClient httpClient;
+    private final UserHttpClient userHttpClient;
 
-    public UserService() {
-        httpClient = new UserHttpClient();
+    public UserService(UserHttpClient userHttpClient) {
+        this.userHttpClient = userHttpClient;
     }
 
-    public void displayFilteredUsers(Set<String> countries, Set<String> inputTags,
+    public void displayFilteredUsers(Set<String> inputCountries, Set<String> inputTags,
                                      int minReputation, int minAnswerCount) {
         ResponseWrapper responseWrapper;
         int page = 0;
         do {
             page++;
-            responseWrapper = httpClient.get(USERS_LINK + "&min=" + minReputation + "&page=" + page);
+            responseWrapper = userHttpClient.get(USERS_LINK + "&min=" + minReputation + "&page=" + page);
             Set<User> users = responseWrapper.users();
             if (users == null) {
                 break;
             }
 
             users.stream()
-                    .filter(user -> Objects.nonNull(user.location())
-                            && Objects.nonNull(user.collectiveItems()))
+                    .filter(user -> Objects.nonNull(user.location()))
+                    .filter(user -> Objects.nonNull(user.collectiveItems()))
                     .filter(user -> user.answerCount() >= minAnswerCount)
-                    .filter(user -> countries.stream()
-                            .anyMatch(country -> user.location().contains(country)))
+                    .filter(user -> inputCountries.stream()
+                            .anyMatch(inputCountry -> user.location().contains(inputCountry)))
                     .filter(user -> inputTags.stream()
                             .anyMatch(inputTag -> user.collectiveItems().stream()
                                     .filter(Objects::nonNull)

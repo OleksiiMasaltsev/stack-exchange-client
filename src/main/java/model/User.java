@@ -7,24 +7,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public record User (
-        @JsonProperty("collectives")
-        Set<CollectiveItem> collectiveItems,
-        @JsonProperty("answer_count")
-        int answerCount,
-        @JsonProperty("question_count")
-        int questionCount,
-        @JsonProperty("reputation")
-        int reputation,
-        @JsonProperty("user_id")
-        int userId,
-        @JsonProperty("location")
-        String location,
-        @JsonProperty("link")
-        String link,
-        @JsonProperty("profile_image")
-        String profileImage,
-        @JsonProperty("display_name")
-        String displayName) {
+        @JsonProperty("collectives") Set<CollectiveItem> collectiveItems,
+        @JsonProperty("answer_count") int answerCount,
+        @JsonProperty("question_count") int questionCount,
+        @JsonProperty("reputation") int reputation,
+        @JsonProperty("user_id") int userId,
+        @JsonProperty("location") String location,
+        @JsonProperty("link") String link,
+        @JsonProperty("profile_image") String profileImage,
+        @JsonProperty("display_name") String displayName) {
         @Override
         public String toString() {
                 Set<String> tags;
