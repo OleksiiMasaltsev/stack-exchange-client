@@ -1,11 +1,14 @@
 package model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record User (
         @JsonProperty("collectives")
-        List<CollectiveItem> collectiveItems,
+        Set<CollectiveItem> collectiveItems,
         @JsonProperty("answer_count")
         int answerCount,
         @JsonProperty("question_count")
@@ -24,9 +27,15 @@ public record User (
         String displayName) {
         @Override
         public String toString() {
-                List<String> tags = collectiveItems.stream()
-                        .flatMap(collectiveItem -> collectiveItem.collective().tags().stream())
-                        .toList();
+                Set<String> tags;
+                if (collectiveItems == null) {
+                        tags = Collections.emptySet();
+                } else {
+                        tags = collectiveItems.stream()
+                                .filter(Objects::nonNull)
+                                .flatMap(collectiveItem -> collectiveItem.collective().tags().stream())
+                                .collect(Collectors.toSet());
+                }
                 return displayName + " " + location + " " + answerCount + " " + questionCount
                         + " " + String.join(",", tags) + " " + link + " " + profileImage;
         }

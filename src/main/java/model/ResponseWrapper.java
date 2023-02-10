@@ -1,7 +1,7 @@
 package model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
+import java.util.Set;
 
-public record ResponseWrapper(@JsonProperty("items") List<User> users,
+public record ResponseWrapper(@JsonProperty("items") Set<User> users,
                               @JsonProperty("has_more") boolean hasMore) {}

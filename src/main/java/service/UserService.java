@@ -1,10 +1,10 @@
 package service;
 
+import client.UserHttpClient;
 import model.ResponseWrapper;
 import model.User;
-import client.UserHttpClient;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class UserService {
     private static final String FILTER = "!P)usXvvTVLsqpq0WqvGhjAVUE0ev8qBGZ_)RDzS)62n";
@@ -14,44 +14,34 @@ public class UserService {
     private final UserHttpClient httpClient;
 
     public UserService() {
-        httpClient  = new UserHttpClient();
+        httpClient = new UserHttpClient();
     }
 
-    public void displayFilteredUsers(List<String> countries, List<String> inputTags,
-                                     int reputationMin, int answerCountMin) {
+    public void displayFilteredUsers(Set<String> countries, Set<String> inputTags,
+                                     int minReputation, int minAnswerCount) {
         ResponseWrapper responseWrapper;
         int page = 0;
         do {
             page++;
-            responseWrapper = httpClient.get(USERS_LINK + "&min=" + reputationMin + "&page=" + page);
-            List<User> users = responseWrapper.users();
+            responseWrapper = httpClient.get(USERS_LINK + "&min=" + minReputation + "&page=" + page);
+            Set<User> users = responseWrapper.users();
             if (users == null) {
                 break;
             }
 
-            List<User> preFilteredUsers = users.stream()
+            users.stream()
                     .filter(user -> Objects.nonNull(user.location())
                             && Objects.nonNull(user.collectiveItems()))
+                    .filter(user -> user.answerCount() >= minAnswerCount)
                     .filter(user -> countries.stream()
                             .anyMatch(country -> user.location().contains(country)))
-                    .filter(user -> user.answerCount() >= answerCountMin)
-                    .toList();
-
-            if (preFilteredUsers.size() > 0) {
-                preFilteredUsers.stream()
-                        .filter(user -> inputTags.stream()
-                                .anyMatch(inputTag -> extractTags(user).stream()
-                                        .anyMatch(tag -> tag.contains(inputTag))))
-                        .forEach(System.out::println);
-            }
+                    .filter(user -> inputTags.stream()
+                            .anyMatch(inputTag -> user.collectiveItems().stream()
+                                    .filter(Objects::nonNull)
+                                    .flatMap(collectiveItem -> collectiveItem.collective().tags().stream())
+                                    .anyMatch(tag -> tag.contains(inputTag))))
+                    .forEach(System.out::println);
 
         } while (responseWrapper.hasMore());
-    }
-
-    private List<String> extractTags(User user) {
-        return user.collectiveItems().stream()
-                .filter(Objects::nonNull)
-                .flatMap(collectiveItem -> collectiveItem.collective().tags().stream())
-                .toList();
     }
 }
