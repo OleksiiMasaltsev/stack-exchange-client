@@ -1,8 +1,8 @@
-package util;
+package client;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import model.Root;
+import model.ResponseWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,17 +13,17 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
-public class RootHttpClient {
+public class UserHttpClient {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-    public RootHttpClient() {
+    public UserHttpClient() {
         httpClient = HttpClient.newHttpClient();
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public Root get(String url) {
+    public ResponseWrapper get(String url) {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Accept-Encoding", "gzip")
@@ -32,16 +32,15 @@ public class RootHttpClient {
         HttpResponse<InputStream> httpResponse;
         try {
             httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofInputStream());
-            return objectMapper.readValue(unZip(httpResponse.body()), Root.class);
+            return objectMapper.readValue(unZip(httpResponse.body()), ResponseWrapper.class);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Can't get a value from url", e);
         }
     }
 
     private String unZip(InputStream is) {
-        try {
-            InputStream bodyStream = new GZIPInputStream(is);
-            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        try (InputStream bodyStream = new GZIPInputStream(is);
+             ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[4096];
             int length;
             while ((length = bodyStream.read(buffer)) > 0) {
