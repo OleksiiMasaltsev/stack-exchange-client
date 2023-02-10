@@ -5,13 +5,12 @@ import model.Collective;
 import model.CollectiveItem;
 import model.ResponseWrapper;
 import model.User;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.when;
 import java.util.Set;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 class UserServiceTest {
     private UserService userService;
@@ -61,9 +60,5 @@ class UserServiceTest {
         when(userHttpClient.get(anyString())).thenReturn(wrapper);
         userService.displayFilteredUsers(Set.of("Moldova"), Set.of("java", "docker"), 223, 1);
         Mockito.verify(userHttpClient).get(anyString());
-    }
-
-    @AfterEach
-    void tearDown() {
     }
 }

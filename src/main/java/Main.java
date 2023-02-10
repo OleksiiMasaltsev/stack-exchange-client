@@ -15,6 +15,7 @@ public class Main {
     public static void main(String[] args) {
         Set<String> countries = Set.of(MOLDOVA, ROMANIA);
         Set<String> tags = Set.of(JAVA, DOT_NET, DOCKER, C_SHARP);
-        new UserService(new UserHttpClient()).displayFilteredUsers(countries, tags , MIN_REPUTATION, MIN_ANSWER_COUNT);
+        new UserService(new UserHttpClient()).displayFilteredUsers(
+                countries, tags , MIN_REPUTATION, MIN_ANSWER_COUNT);
     }
 }
