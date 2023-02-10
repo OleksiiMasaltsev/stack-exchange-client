@@ -5,10 +5,13 @@ import model.Collective;
 import model.CollectiveItem;
 import model.ResponseWrapper;
 import model.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import java.io.ByteArrayOutputStream;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Set;
 
@@ -43,11 +46,11 @@ class UserServiceTest {
 
         when(userHttpClient.get(anyString())).thenReturn(wrapper);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
         userService.displayFilteredUsers(Set.of("Moldova"), Set.of("java", "docker"), 223, 1);
 
-        assertEquals(user1.toString(), baos.toString().strip());
+        assertEquals(user1.toString(), outputStream.toString().strip());
         Mockito.verify(userHttpClient).get(anyString());
     }
 
@@ -68,11 +71,16 @@ class UserServiceTest {
 
         when(userHttpClient.get(anyString())).thenReturn(wrapper);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(baos));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputStream));
         userService.displayFilteredUsers(Set.of("Moldova"), Set.of("java", "docker"), 223, 1);
 
-        assertEquals("", baos.toString().strip());
+        assertEquals("", outputStream.toString().strip());
         Mockito.verify(userHttpClient).get(anyString());
+    }
+
+    @AfterEach
+    void tearDown() {
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
     }
 }
